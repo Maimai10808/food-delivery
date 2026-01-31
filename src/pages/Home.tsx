@@ -1,27 +1,22 @@
-import Categories from "../Category";
-import { Nav } from "../components/Nav";
+import { useMemo, useState } from "react";
+import CategoriesCard from "../components/Home/CategoriesCard";
+import FoodDisplay from "../components/Home/FoodDisplay";
+import { food_items } from "../food";
+import { Nav } from "../components/Home/Nav";
 
 export function Home() {
+  const [selected, setSelected] = useState<string>("All");
+
+  const filteredItems = useMemo(() => {
+    if (selected === "All") return food_items;
+    return food_items.filter((item) => item.food_category === selected);
+  }, [selected]);
+
   return (
     <div className="w-full bg-slate-400 min-h-screen">
       <Nav />
-
-      <div className="flex flex-wrap justify-center items-center gap-10 ">
-        {Categories.map((item) => {
-          return (
-            <div
-              className="w-35 h-40 bg-white flex-col items-start p-5 gap-10
-                         justify-start text-xl font-semibold text-gray-600
-                         rounded-md shadow-2xl hover:bg-green-200 cursor-pointer
-                         transition-all duration-200
-                         "
-            >
-              {item.icon}
-              {item.name}
-            </div>
-          );
-        })}
-      </div>
+      <CategoriesCard selected={selected} onSelect={setSelected} />
+      <FoodDisplay items={filteredItems} />
     </div>
   );
 }
