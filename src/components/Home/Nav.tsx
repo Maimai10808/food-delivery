@@ -1,8 +1,10 @@
 import { Hamburger, Search, ShoppingBag } from "lucide-react";
 import { useFoodFilter } from "../../hooks/useFoodFilter";
+import { useShowCart } from "../../hooks/useshowCart";
 
 export function Nav() {
   const { searchText, setSearchText } = useFoodFilter();
+  const { setshowCart } = useShowCart();
 
   return (
     <div className="w-full h-25 bg-red-200 flex justify-between items-center px-5 md:px-10">
@@ -32,7 +34,9 @@ export function Nav() {
         <span className="absolute top-0 right-1 font-semibold text-green-500 text-[16px]">
           0
         </span>
-        <ShoppingBag className="w-10 h-10 text-green-500" />
+        <button onClick={() => setshowCart(true)}>
+          <ShoppingBag className="w-10 h-10 text-green-500" />
+        </button>
       </div>
     </div>
   );

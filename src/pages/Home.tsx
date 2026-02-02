@@ -4,9 +4,15 @@ import { Nav } from "../components/Home/Nav";
 import { FoodFilterProvider } from "../providers/food-filter-provider";
 import { useFoodFilter } from "../hooks/useFoodFilter";
 
+import { ShowCartProvider } from "../providers/show-cart-provider";
+import { useShowCart } from "../hooks/useshowCart";
+import Cart from "../components/Home/Cart";
+
 function HomeContent() {
   const { selectedCategory, setSelectedCategory, filteredItems } =
     useFoodFilter();
+
+  const { showCart } = useShowCart();
 
   return (
     <div className="w-full bg-slate-400 min-h-screen">
@@ -16,6 +22,8 @@ function HomeContent() {
         onSelect={setSelectedCategory}
       />
       <FoodDisplay items={filteredItems} />
+
+      {showCart ? <Cart /> : null}
     </div>
   );
 }
@@ -23,7 +31,9 @@ function HomeContent() {
 export function Home() {
   return (
     <FoodFilterProvider>
-      <HomeContent />
+      <ShowCartProvider>
+        <HomeContent />
+      </ShowCartProvider>
     </FoodFilterProvider>
   );
 }
