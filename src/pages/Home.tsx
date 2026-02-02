@@ -1,26 +1,32 @@
-import { useMemo, useState } from "react";
 import CategoriesCard from "../components/Home/CategoriesCard";
 import FoodDisplay from "../components/Home/FoodDisplay";
-import { food_items } from "../food";
 import { Nav } from "../components/Home/Nav";
+import { FoodFilterProvider } from "../providers/food-filter-provider";
+import { useFoodFilter } from "../hooks/useFoodFilter";
 
-export function Home() {
-  const [selected, setSelected] = useState<string>("All");
-
-  const filteredItems = useMemo(() => {
-    if (selected === "All") return food_items;
-    return food_items.filter((item) => item.food_category === selected);
-  }, [selected]);
+function HomeContent() {
+  const { selectedCategory, setSelectedCategory, filteredItems } =
+    useFoodFilter();
 
   return (
     <div className="w-full bg-slate-400 min-h-screen">
       <Nav />
-      <CategoriesCard selected={selected} onSelect={setSelected} />
+      <CategoriesCard
+        selected={selectedCategory}
+        onSelect={setSelectedCategory}
+      />
       <FoodDisplay items={filteredItems} />
     </div>
   );
 }
 
+export function Home() {
+  return (
+    <FoodFilterProvider>
+      <HomeContent />
+    </FoodFilterProvider>
+  );
+}
 // Home
 // ├─ state: selected = "All"
 // ├─ setSelected (useState setter)
