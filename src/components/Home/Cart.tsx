@@ -10,80 +10,112 @@ import {
   setQty,
 } from "../../redux/store/slices/cartSlice";
 import { Button } from "../ui/button";
+import { useDrawerGsap } from "../../animation/useDrawerGsap";
+import { useRef } from "react";
+import { TAX_RATE } from "../../constant/cartFee";
 
 export default function Cart() {
   const dispatch = useAppDispatch();
+  const showCart = useAppSelector((s) => s.ui.showCart);
+
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const drawerRef = useRef<HTMLElement | null>(null);
+
   const items = useAppSelector(selectCartItems);
   const subtotal = useAppSelector(selectCartSubtotal);
 
-  // 你现在写死的费用，我给你保留个示例
+  const tax_rate = TAX_RATE;
+
   const deliveryFee = items.length > 0 ? 20 : 0;
-  const taxes = subtotal * 0.05; // 举例：5%
+  const taxes = subtotal * tax_rate;
   const total = subtotal + deliveryFee + taxes;
 
+  useDrawerGsap(overlayRef, drawerRef, {
+    isOpen: showCart,
+    // 可选：自定义时长/缓动
+    durationIn: 0.38,
+    durationOut: 0.3,
+    overlayFade: 0.22,
+  });
+
   return (
-    <div className="md:w-[40vw] h-full fixed top-0 right-0 bg-white shadow-2xl">
-      <header className="flex justify-between items-center p-10 text-green-400 text-[18px] font-semibold">
-        <span>Order items</span>
+    <>
+      {/* Overlay */}
+      <div
+        ref={overlayRef}
+        className="fixed inset-0 z-40 bg-black/40"
+        onClick={() => dispatch(closeCart())}
+      />
 
-        <button onClick={() => dispatch(closeCart())}>
-          <X />
-        </button>
-      </header>
+      {/* Drawer */}
+      <aside
+        ref={drawerRef}
+        className="fixed top-0 right-0 z-50 h-full bg-white shadow-2xl w-full md:w-[40vw]"
+        role="dialog"
+        aria-modal="true"
+      >
+        <header className="flex justify-between items-center p-10 text-green-400 text-[18px] font-semibold">
+          <span>Order items</span>
+          <button onClick={() => dispatch(closeCart())}>
+            <X />
+          </button>
+        </header>
 
-      <div className="px-6 flex flex-col gap-3">
-        {items.length === 0 ? (
-          <div className="p-6 text-gray-500 text-5xl font-semibold">
-            Cart is empty.
-          </div>
-        ) : (
-          items.map((item) => (
-            <CartFoodCard
-              key={item.id}
-              id={item.id}
-              title={item.food_name}
-              image={item.food_image}
-              price={item.price}
-              qty={item.qty}
-            />
-          ))
-        )}
-      </div>
-
-      <div className="px-10 ">
-        <Separator />
-        <div className="py-5 ">
-          <div className="flex justify-between items-center">
-            <p className="font-bold">Subtotal</p>
-            <span className="text-green-400 font-semibold">
-              Rs {subtotal.toFixed(2)}/-
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <p className="font-bold">Delivery Fee</p>
-            <span className="text-green-400 font-semibold">
-              Rs {deliveryFee.toFixed(2)}/-
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <p className="font-bold">Taxes</p>
-            <span className="text-green-400 font-semibold">
-              Rs {taxes.toFixed(2)}/-
-            </span>
-          </div>
+        <div className="px-6 flex flex-col gap-3">
+          {items.length === 0 ? (
+            <div className="p-6 text-gray-500 text-5xl font-semibold">
+              Cart is empty.
+            </div>
+          ) : (
+            items.map((item) => (
+              <CartFoodCard
+                key={item.id}
+                id={item.id}
+                title={item.food_name}
+                image={item.food_image}
+                price={item.price}
+                qty={item.qty}
+              />
+            ))
+          )}
         </div>
-        <Separator />
-        <div className="flex justify-between items-center text-2xl  py-5">
-          <p className="font-bold">Total</p>
-          <span className="text-green-400 font-semibold ">
-            Rs {total.toFixed(2)}/-
-          </span>
+
+        <div className="px-10">
+          <Separator />
+          <div className="py-5">
+            <div className="flex justify-between items-center">
+              <p className="font-bold">Subtotal</p>
+              <span className="text-green-400 font-semibold">
+                Rs {subtotal.toFixed(2)}/-
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <p className="font-bold">Delivery Fee</p>
+              <span className="text-green-400 font-semibold">
+                Rs {deliveryFee.toFixed(2)}/-
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <p className="font-bold">Taxes</p>
+              <span className="text-green-400 font-semibold">
+                Rs {taxes.toFixed(2)}/-
+              </span>
+            </div>
+          </div>
+          <Separator />
+          <div className="flex justify-between items-center text-2xl py-5">
+            <p className="font-bold">Total</p>
+            <span className="text-green-400 font-semibold">
+              Rs {total.toFixed(2)}/-
+            </span>
+          </div>
+
+          <Button className="w-full h-12 bg-green-400">
+            <p className="font-bold text-xl text-gray-200">Place Order</p>
+          </Button>
         </div>
-        <Button className="w-full h-12 bg-green-400">
-          <p className="font-bold text-xl text-gray-200">Place Order</p>
-        </Button>
-      </div>
-    </div>
+      </aside>
+    </>
   );
 }
 
