@@ -3,16 +3,14 @@ import FoodDisplay from "../components/Home/FoodDisplay";
 import { Nav } from "../components/Home/Nav";
 import { FoodFilterProvider } from "../providers/food-filter-provider";
 import { useFoodFilter } from "../hooks/useFoodFilter";
-
-import { ShowCartProvider } from "../providers/show-cart-provider";
-import { useShowCart } from "../hooks/useshowCart";
 import Cart from "../components/Home/Cart";
+import { useAppSelector } from "../redux/store/hooks";
 
 function HomeContent() {
   const { selectedCategory, setSelectedCategory, filteredItems } =
     useFoodFilter();
 
-  const { showCart } = useShowCart();
+  const showCart = useAppSelector((s) => s.ui.showCart);
 
   return (
     <div className="w-full bg-slate-400 min-h-screen">
@@ -21,6 +19,7 @@ function HomeContent() {
         selected={selectedCategory}
         onSelect={setSelectedCategory}
       />
+
       <FoodDisplay items={filteredItems} />
 
       {showCart ? <Cart /> : null}
@@ -31,9 +30,7 @@ function HomeContent() {
 export function Home() {
   return (
     <FoodFilterProvider>
-      <ShowCartProvider>
-        <HomeContent />
-      </ShowCartProvider>
+      <HomeContent />
     </FoodFilterProvider>
   );
 }

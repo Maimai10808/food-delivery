@@ -1,13 +1,16 @@
 import { Hamburger, Search, ShoppingBag } from "lucide-react";
 import { useFoodFilter } from "../../hooks/useFoodFilter";
-import { useShowCart } from "../../hooks/useshowCart";
+import { useAppDispatch, useAppSelector } from "../../redux/store/hooks";
+import { selectCartTotalQty } from "../../redux/store/slices/cartSlice";
+import { openCart } from "../../redux/store/slices/uiSlice";
 
 export function Nav() {
   const { searchText, setSearchText } = useFoodFilter();
-  const { setshowCart } = useShowCart();
+  const dispatch = useAppDispatch();
+  const totalQty = useAppSelector(selectCartTotalQty);
 
   return (
-    <div className="w-full h-25 bg-red-200 flex justify-between items-center px-5 md:px-10">
+    <div className="w-full h-25 flex justify-between items-center px-5 md:px-10">
       <div className="w-15 h-15 bg-white flex justify-center items-center rounded-md shadow-2xl">
         <Hamburger className="w-10 h-10 text-green-500" />
       </div>
@@ -32,9 +35,9 @@ export function Nav() {
 
       <div className="w-15 h-15 bg-white flex justify-center items-center rounded-md shadow-2xl relative">
         <span className="absolute top-0 right-1 font-semibold text-green-500 text-[16px]">
-          0
+          {totalQty}
         </span>
-        <button onClick={() => setshowCart(true)}>
+        <button onClick={() => dispatch(openCart())}>
           <ShoppingBag className="w-10 h-10 text-green-500" />
         </button>
       </div>
